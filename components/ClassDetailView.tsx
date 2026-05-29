@@ -36,7 +36,7 @@ import {
   TrendingUp,
   Sparkles,
   Award,
-  Target,
+  Flag,
   Plus,
   X,
 } from 'lucide-react';
@@ -1139,26 +1139,19 @@ const LessonOverviewPanel: React.FC<LessonOverviewPanelProps> = ({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-      {/* ── 차시 정보 (미진행 차시면 참여 학생 KPI 숨김) ── */}
+      {/* ── 학습 목표 + 참여 학생 (라벨은 박스 밖, 차시 인사이트와 동일 스타일) ── */}
       <div
         style={{
-          background: '#f8fafc',
-          border: '1px solid var(--border-color)',
-          borderRadius: 'var(--radius-md)',
-          padding: 14,
           display: 'grid',
           gridTemplateColumns: isConducted ? '1fr 220px' : '1fr',
           gap: 16,
         }}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-              <Target size={14} style={{ color: 'var(--color-primary)' }} />
-              <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontWeight: 700 }}>
-                학습 목표
-              </span>
-            </span>
+        {/* 좌측: 학습 목표 */}
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
+            <Flag size={14} style={{ color: 'var(--color-primary)' }} />
+            <span style={{ fontSize: '0.9rem', fontWeight: 700 }}>학습 목표</span>
             {!isConducted && (
               <span
                 style={{
@@ -1180,53 +1173,63 @@ const LessonOverviewPanel: React.FC<LessonOverviewPanelProps> = ({
               </span>
             ))}
           </div>
-          <p style={{ fontSize: '0.88rem', lineHeight: 1.4, color: 'var(--text-main)', fontWeight: 500 }}>
-            {lesson.learningObjective}
-          </p>
-
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: 4 }}>
-            <span>
-              <strong style={{ color: 'var(--text-main)' }}>참여 양상:</strong>{' '}
-              {lesson.activityTypes.participation.join(', ')}
-            </span>
-            <span>
-              <strong style={{ color: 'var(--text-main)' }}>활동 목표:</strong>{' '}
-              {lesson.activityTypes.goal.join(', ')}
-            </span>
-            <span>
-              <strong style={{ color: 'var(--text-main)' }}>활동 형태:</strong>{' '}
-              {lesson.activityTypes.format.join(', ')}
-            </span>
-          </div>
-        </div>
-
-        {isConducted && (
           <div
             style={{
+              background: '#f8fafc',
+              border: '1px solid var(--border-color)',
+              borderRadius: 'var(--radius-md)',
+              padding: 14,
               display: 'flex',
               flexDirection: 'column',
               gap: 8,
-              justifyContent: 'center',
             }}
           >
+            <p style={{ fontSize: '0.88rem', lineHeight: 1.4, color: 'var(--text-main)', fontWeight: 500 }}>
+              {lesson.learningObjective}
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: 2 }}>
+              <span>
+                <strong style={{ color: 'var(--text-main)' }}>참여 양상:</strong>{' '}
+                {lesson.activityTypes.participation.join(', ')}
+              </span>
+              <span>
+                <strong style={{ color: 'var(--text-main)' }}>활동 목표:</strong>{' '}
+                {lesson.activityTypes.goal.join(', ')}
+              </span>
+              <span>
+                <strong style={{ color: 'var(--text-main)' }}>활동 형태:</strong>{' '}
+                {lesson.activityTypes.format.join(', ')}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* 우측: 참여 학생 */}
+        {isConducted && (
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+              <Users size={14} style={{ color: 'var(--color-primary)' }} />
+              <span style={{ fontSize: '0.9rem', fontWeight: 700 }}>참여 학생</span>
+            </div>
             <div
               style={{
-                background: '#ffffff',
-                padding: '10px 12px',
-                borderRadius: 'var(--radius-sm)',
+                background: '#f8fafc',
                 border: '1px solid var(--border-color)',
+                borderRadius: 'var(--radius-md)',
+                padding: 14,
                 display: 'flex',
-                alignItems: 'center',
-                gap: 8,
+                alignItems: 'baseline',
+                gap: 6,
+                height: 'calc(100% - 26px)',
+                minHeight: 80,
               }}
             >
-              <Users size={16} style={{ color: 'var(--color-success)' }} />
-              <div>
-                <div style={{ fontSize: '0.7rem', color: 'var(--text-dim)', fontWeight: 600 }}>참여 학생</div>
-                <div style={{ fontSize: '1.05rem', fontWeight: 700 }}>
-                  {participants} / {studentsCount}명
-                </div>
-              </div>
+              <span style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--color-primary)', lineHeight: 1 }}>
+                {participants}
+              </span>
+              <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                / {studentsCount}명
+              </span>
             </div>
           </div>
         )}
