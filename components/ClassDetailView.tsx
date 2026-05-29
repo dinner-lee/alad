@@ -76,26 +76,34 @@ function renderCustomChart(
     fontSize: '0.78rem',
   } as const;
 
+  const classAvgLabel = {
+    position: 'insideTopRight' as const,
+    value: `학급 평균 ${classAvg}`,
+    fill: 'var(--color-secondary)',
+    fontSize: 11,
+    fontWeight: 600,
+  };
+
   if (type === 'line') {
     return (
-      <LineChart data={rows} margin={{ top: 8, right: 8, left: -20, bottom: 28 }}>
+      <LineChart data={rows} margin={{ top: 18, right: 8, left: -20, bottom: 28 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="rgba(15,23,42,0.05)" />
         <XAxis dataKey="name" tick={tick9} angle={-40} textAnchor="end" interval={0} height={50} />
         <YAxis tick={tick10} />
         <Tooltip contentStyle={tooltipStyle} />
-        <ReferenceLine y={classAvg} stroke="var(--color-secondary)" strokeDasharray="4 4" />
+        <ReferenceLine y={classAvg} stroke="var(--color-secondary)" strokeDasharray="4 4" label={classAvgLabel} />
         <Line type="monotone" dataKey="value" stroke="var(--color-primary)" strokeWidth={2} dot={{ r: 3 }} />
       </LineChart>
     );
   }
   if (type === 'scatter') {
     return (
-      <ScatterChart margin={{ top: 8, right: 8, left: -20, bottom: 28 }}>
+      <ScatterChart margin={{ top: 18, right: 8, left: -20, bottom: 28 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="rgba(15,23,42,0.05)" />
         <XAxis dataKey="name" tick={tick9} angle={-40} textAnchor="end" interval={0} height={50} />
         <YAxis dataKey="value" tick={tick10} />
         <Tooltip contentStyle={tooltipStyle} />
-        <ReferenceLine y={classAvg} stroke="var(--color-secondary)" strokeDasharray="4 4" />
+        <ReferenceLine y={classAvg} stroke="var(--color-secondary)" strokeDasharray="4 4" label={classAvgLabel} />
         <Scatter data={rows} fill="var(--color-primary)" />
       </ScatterChart>
     );
@@ -157,7 +165,7 @@ function renderCustomChart(
   }
   // default: bar
   return (
-    <BarChart data={rows} margin={{ top: 8, right: 8, left: -20, bottom: 28 }}>
+    <BarChart data={rows} margin={{ top: 18, right: 8, left: -20, bottom: 28 }}>
       <CartesianGrid strokeDasharray="3 3" stroke="rgba(15,23,42,0.05)" />
       <XAxis dataKey="name" tick={tick9} angle={-40} textAnchor="end" interval={0} height={50} />
       <YAxis tick={tick10} />
@@ -166,12 +174,7 @@ function renderCustomChart(
         y={classAvg}
         stroke="var(--color-secondary)"
         strokeDasharray="4 4"
-        label={{
-          position: 'right',
-          value: `평균 ${classAvg}`,
-          fill: 'var(--color-secondary)',
-          fontSize: 10,
-        }}
+        label={classAvgLabel}
       />
       <Bar dataKey="value" fill="var(--color-primary)" radius={[3, 3, 0, 0]} />
     </BarChart>
@@ -1235,9 +1238,6 @@ const LessonOverviewPanel: React.FC<LessonOverviewPanelProps> = ({
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
             <Activity size={14} style={{ color: 'var(--color-primary)' }} />
             <span style={{ fontSize: '0.9rem', fontWeight: 700 }}>차시 인사이트</span>
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>
-              (학생별 분포 + 학급 평균 기준선)
-            </span>
             <button
               className="add-indicator-btn"
               onClick={() => setShowBuilder(true)}
@@ -1355,16 +1355,28 @@ const DefaultIndicatorChart: React.FC<DefaultIndicatorChartProps> = ({
       className="glass-card"
       style={{ background: '#ffffff', padding: 12 }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
-        <div>
-          <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-main)' }}>
+      {/* 제목 + 설명(인라인) + KPI */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4, gap: 10, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, flex: 1, minWidth: 0 }}>
+          <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-main)' }}>
             {indicator.label}
-          </div>
-          <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: 2 }}>
-            {indicator.insight}
-          </div>
+          </span>
+          <span
+            style={{
+              fontSize: '0.72rem',
+              color: 'var(--text-muted)',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              flex: 1,
+              minWidth: 0,
+            }}
+            title={indicator.insight}
+          >
+            · {indicator.insight}
+          </span>
         </div>
-        <div style={{ display: 'flex', gap: 8, fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+        <div style={{ display: 'flex', gap: 8, fontSize: '0.7rem', color: 'var(--text-muted)', flexShrink: 0 }}>
           <span>
             평균 <strong style={{ color: 'var(--color-primary)' }}>{classAvg}</strong>
             {indicator.unit}
@@ -1376,7 +1388,7 @@ const DefaultIndicatorChart: React.FC<DefaultIndicatorChartProps> = ({
       </div>
       <div style={{ width: '100%', height: 180 }}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={values} margin={{ top: 8, right: 8, left: -20, bottom: 28 }}>
+          <BarChart data={values} margin={{ top: 18, right: 8, left: -20, bottom: 28 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(15,23,42,0.05)" />
             <XAxis
               dataKey="name"
@@ -1401,10 +1413,11 @@ const DefaultIndicatorChart: React.FC<DefaultIndicatorChartProps> = ({
               stroke="var(--color-secondary)"
               strokeDasharray="4 4"
               label={{
-                position: 'right',
-                value: `평균 ${classAvg}`,
+                position: 'insideTopRight',
+                value: `학급 평균 ${classAvg}${indicator.unit}`,
                 fill: 'var(--color-secondary)',
-                fontSize: 10,
+                fontSize: 11,
+                fontWeight: 600,
               }}
             />
             <Bar dataKey="value" fill="var(--color-primary)" radius={[3, 3, 0, 0]} />
@@ -1483,29 +1496,28 @@ const CustomIndicatorChart: React.FC<CustomIndicatorChartProps> = ({
         borderColor: 'rgba(79, 70, 229, 0.4)',
       }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4, gap: 8 }}>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span className="badge badge-primary" style={{ fontSize: '0.65rem', padding: '1px 6px' }}>
-              맞춤
-            </span>
-            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-main)' }}>
-              {indicator.name}
-            </span>
-          </div>
-          <div
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4, gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, flex: 1, minWidth: 0 }}>
+          <span className="badge badge-primary" style={{ fontSize: '0.65rem', padding: '1px 6px', flexShrink: 0 }}>
+            맞춤
+          </span>
+          <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-main)', flexShrink: 0 }}>
+            {indicator.name}
+          </span>
+          <span
             style={{
               fontSize: '0.72rem',
               color: 'var(--text-muted)',
-              marginTop: 2,
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
+              flex: 1,
+              minWidth: 0,
             }}
             title={formulaText}
           >
-            수식: {formulaText}
-          </div>
+            · 수식: {formulaText}
+          </span>
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', fontSize: '0.7rem', color: 'var(--text-muted)' }}>
